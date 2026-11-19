@@ -97,11 +97,10 @@ export function Hero() {
       <Hero3D />
       <div className="container">
         <div className="hero-content">
-          <div className="pill"><i></i> القناة الوحيدة والموثقة لـ Amir Store</div>
+          <div className="pill"><i></i> الموقع الوحيد والموثق لـ Amir Store</div>
           <h1 className="display">
             <span className="line"><span>كوينز eFootball</span></span>
-            <span className="line"><span className="gold-text">بسعر لقطة</span></span>
-            <span className="line"><span>وشحن لكل الألعاب</span></span>
+            <span className="line"><span className="gold-text">وشحن لكل الألعاب</span></span>
           </h1>
           <p className="lead">شحن شرعي ومضمون، ومن غير ما ندخل على حسابك. بنشتغل في المجال من 2021، وعروض الكوينز بتنزل هنا وبس.</p>
           <div className="hero-cta">
