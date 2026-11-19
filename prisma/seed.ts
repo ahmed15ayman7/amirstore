@@ -2,7 +2,7 @@ import "dotenv/config";
 import { PrismaClient } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL || process.env.POSTGRES_URL }) });
 
 type It = { c?: number; p?: number; s?: string; hot?: 1; tag?: string; name?: string; unit?: string; ask?: 1 };
 const SITE_NOTES = ["آيفون وأندرويد", "سيرفر اللعبة لازم يكون نفس سيرفر موقع My Konami", "السن لازم يكون فوق 21 سنة", "الشحن بدون محاولات دخول على الحساب"];
