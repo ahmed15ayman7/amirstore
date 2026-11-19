@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  email     String?
+  platform  String?
+  password  String
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Platform {
+  key      String    @id
+  label    String
+  notes    String    // JSON array of strings
+  sort     Int       @default(0)
+  products Product[]
+}
+
+model Product {
+  id          String   @id
+  platformKey String
+  platform    Platform @relation(fields: [platformKey], references: [key], onDelete: Cascade)
+  coins       Int?
+  price       Int?
+  sub         String?
+  hot         Boolean  @default(false)
+  tag         String?
+  name        String?  // for "ask" items
+  unit        String?
+  ask         Boolean  @default(false)
+  sort        Int      @default(0)
+  active      Boolean  @default(true)
+}
+
+model Service {
+  id     Int    @id @default(autoincrement())
+  emoji  String
+  title  String
+  desc   String
+  tab    String
+  sort   Int    @default(0)
+}
+
+model Faq {
+  id       Int    @id @default(autoincrement())
+  question String
+  answer   String
+  sort     Int    @default(0)
+}
+
+model Order {
+  id        String      @id // e.g. AS-XXXXX
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  total     Int
+  pay       String
+  note      String?
+  status    String      @default("اتبعت على واتساب")
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  coins     Int
+  qty       Int
+  price     Int
+  platform  String
+  offer     String?
+}
