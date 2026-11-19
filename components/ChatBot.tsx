@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { WA, goToPrices, useStore } from "./store";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { WA, fmt, goToPrices, useStore } from "./store";
+import type { Platform } from "@/lib/types";
 
 type Act =
   | { t: "tab"; tab: string; label: string }
@@ -14,11 +15,45 @@ type Msg = { id: number; who: "b" | "u"; text: string; acts?: Act[] };
 const goPrices = (tab: string): Act[] => [{ t: "tab", tab, label: "شوف الأسعار" }];
 const waBtn = (txt: string, label = "كلم الأدمن"): Act => ({ t: "link", wa: true, href: `https://wa.me/${WA}?text=${encodeURIComponent(txt)}`, label: label + " 💬" });
 
+/* price answers are generated from the live DB prices so they never go stale */
+function priceEntries(platforms: Platform[]): Entry[] {
+  const P = (k: string) => platforms.find((p) => p.key === k);
+  const block = (k: string, title: string) => {
+    const p = P(k);
+    if (!p) return "";
+    const offers = p.items.filter((i) => i.kind === "offer");
+    const base = p.items.filter((i) => i.kind === "base");
+    const lines = [title];
+    if (offers.length)
+      lines.push("🔥 العروض الحالية:", ...offers.map((o) => `${fmt(o.c)} كوين ← ${fmt(o.p)}ج${o.s ? " (" + o.s + ")" : ""}`));
+    if (base.length)
+      lines.push(`💰 الأسعار الأساسية: من ${fmt(base[0].c)} كوين بـ ${fmt(base[0].p)}ج لحد ${fmt(base[base.length - 1].c)} كوين بـ ${fmt(base[base.length - 1].p)}ج`);
+    return lines.join("\n");
+  };
+  const bundles = platforms.flatMap((p) => p.items.filter((i) => i.kind === "bundle"));
+  return [
+    {
+      w: 0.4,
+      k: ["اسعار", "سعر", "بكام", "كام", "الاسعار", "price"],
+      a: "أسعارنا مقسمة حسب المنصة 👇\nفيه عروض حالية بخصم كبير، وأسعار أساسية لحد 30,000 كوين، ولو محتار جرّب «حاسبة الكوينز» في صفحة الأسعار 🧮\nاختار منصتك:",
+      acts: [
+        { t: "tab", tab: "android", label: "أندرويد" }, { t: "tab", tab: "ios", label: "آيفون" }, { t: "tab", tab: "jp", label: "موقع اليابان" },
+        { t: "tab", tab: "world", label: "موقع مصر" }, { t: "tab", tab: "steam", label: "ستيم" },
+      ],
+    },
+    { k: ["اندرويد", "android", "جوجل"], a: block("android", "أسعار شحن أندرويد 🤖"), acts: goPrices("android") },
+    { k: ["ايفون", "iphone", "ios", "ابل", "اي فون"], a: block("ios", "أسعار شحن آيفون 🍎"), acts: goPrices("ios") },
+    { k: ["كود", "خصم", "كوبون", "promo", "discount"], a: "لو معاك كود خصم اكتبه في السلة قبل ما تبعت الطلب، والخصم بيتطبق على الأسعار الأساسية وباقات اللاعبين (مش على العروض لأنها مخصومة أصلاً) 🎟️" },
+    { k: ["حاسبه", "احسب", "ارخص", "تشكيله"], a: "جرّب «حاسبة الكوينز الذكية» 🧮 قولها محتاج كام كوين وهي تطلعلك أرخص تشكيلة من العروض والأسعار الأساسية، وتضيفها للسلة بدوسة واحدة.", acts: goPrices("android") },
+    {
+      k: ["سواريز", "كاسياس", "لاعب", "باقات", "باقه"],
+      a: bundles.length ? "باقات اللاعبين ⭐\n" + bundles.map((b) => `${b.name} + ${b.c} كوين ← ${b.p}ج`).join("\n") : "اسأل الأدمن عن باقات اللاعبين.",
+      acts: goPrices("android"),
+    },
+  ];
+}
+
 const BOT_KB: Entry[] = [
-  { w: 0.4, k: ["اسعار", "سعر", "بكام", "كام", "الاسعار", "price"], a: "أسعارنا مقسمة حسب المنصة 👇\n🤖 أندرويد: 500 كوين بـ 180ج لحد 6500 كوين بـ 1950ج\n🍎 آيفون: 500 كوين بـ 180ج لحد 6500 كوين بـ 1900ج\n🌐 عروض الموقع: من 85ج\n💙 ستيم: من 85ج\nاختار منصتك:",
-    acts: [{ t: "tab", tab: "android", label: "أندرويد" }, { t: "tab", tab: "ios", label: "آيفون" }, { t: "tab", tab: "jp", label: "موقع اليابان" }, { t: "tab", tab: "world", label: "موقع مصر" }, { t: "tab", tab: "steam", label: "ستيم" }] },
-  { k: ["اندرويد", "android", "جوجل"], a: "أسعار شحن أندرويد 🤖\n500 كوين ← 180ج\n1500 كوين ← 480ج\n4500 كوين ← 1350ج\nأول عرضين (2000 كوين) ← 640ج\nالتلت عروض (6500 كوين) ← 1950ج", acts: goPrices("android") },
-  { k: ["ايفون", "iphone", "ios", "ابل", "اي فون"], a: "أسعار شحن آيفون 🍎\n500 كوين ← 180ج\n1500 كوين ← 470ج\n4500 كوين ← 1300ج\nأول عرضين (2000 كوين) ← 620ج\nالتلت عروض (6500 كوين) ← 1900ج", acts: goPrices("ios") },
   { k: ["ستيم", "steam", "كمبيوتر", "pc", "لاب"], a: "أسعار ستيم 💙\n190 كوين ← 85ج\n500 كوين ← 175ج\n1500 كوين ← 520ج\n4500 كوين ← 1450ج", acts: goPrices("steam") },
   { k: ["موقع", "كونامي", "konami", "7000", "يابان", "اليابان", "7190"], a: "عروض موقع My Konami (آيفون وأندرويد) 🌐\n🇯🇵 سيرفر اليابان: 7190 كوين بـ 2230ج\n🌍 مصر وباقي الدول: 7190 كوين بـ 2430ج\n\n⚡ شرطين مهمين: سيرفر اللعبة لازم يكون نفس سيرفر الموقع، وسنك لازم يكون فوق 21 سنة.",
     acts: [{ t: "tab", tab: "jp", label: "اليابان" }, { t: "tab", tab: "world", label: "مصر وباقي الدول" }] },
@@ -48,11 +83,11 @@ const CHIPS = ["الأسعار", "إزاي أطلب؟", "عروض الموقع",
 const norm = (t: string) =>
   t.toLowerCase().replace(/[ً-ْـ]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/[؟?!.,،]/g, " ");
 
-function botAnswer(q: string): Entry {
+function botAnswer(q: string, kb: Entry[]): Entry {
   const n = " " + norm(q) + " ";
   let best: Entry | null = null,
     score = 0;
-  BOT_KB.forEach((e) => {
+  kb.forEach((e) => {
     let s = 0;
     e.k.forEach((k) => {
       if (n.includes(norm(k))) s += norm(k).length * (e.w || 1);
@@ -66,7 +101,8 @@ function botAnswer(q: string): Entry {
 }
 
 export default function ChatBot() {
-  const { user, setTab, openAuth } = useStore();
+  const { user, setTab, openAuth, data } = useStore();
+  const kb = useMemo(() => [...priceEntries(data.platforms), ...BOT_KB], [data]);
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [typing, setTyping] = useState(false);
@@ -95,7 +131,7 @@ export default function ChatBot() {
     if (!q.trim()) return;
     add("u", q);
     setTyping(true);
-    const r = botAnswer(q);
+    const r = botAnswer(q, kb);
     setTimeout(() => {
       setTyping(false);
       add("b", r.a, r.acts);

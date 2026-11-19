@@ -9,7 +9,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma db push && tsx prisma/seed.ts --if-empty && next build"
+    "vercel-build": "prisma generate && prisma db push && tsx prisma/seed.ts --sync && next build"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",

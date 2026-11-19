@@ -2,8 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Counter, Reveal, Snow, tilt } from "./fx";
 import Hero3D from "./Hero3D";
-import { WA, fmt, goToPrices, useStore } from "./store";
-import type { Product } from "@/lib/types";
+import { WA, goToPrices, useStore } from "./store";
 
 const TOUR_WA = `https://wa.me/${WA}?text=${encodeURIComponent("عايز أشترك في بطولة Amir Store الشتوية")}`;
 
@@ -112,7 +111,6 @@ export function Hero() {
           <div className="hero-stats">
             <div><Counter to={5} /><small>سنين خبرة</small></div>
             <div><Counter to={7} /><small>خدمات شحن</small></div>
-            <div><Counter to={64} /><small>لاعب في البطولة</small></div>
           </div>
         </div>
       </div>
@@ -122,14 +120,16 @@ export function Hero() {
 }
 
 /* ---------------- MARQUEE ---------------- */
-const M_ITEMS = ["شحن شرعي ومضمون", "6500 كوين أندرويد بـ 1950ج", "7190 كوين موقع اليابان بـ 2230ج", "بطولة Amir Store الشتوية - 64 لاعب", "خبرة من 2021", "شحن بدون تسجيل دخول", "موجود شحن كل الألعاب"];
+const M_ITEMS = ["شحن شرعي ومضمون", "6500 كوين أندرويد بـ 1950ج", "7190 كوين موقع اليابان بـ 2230ج", "بطولة Amir Store الشتوية - 64 لاعب", "خبرة من 2021", "لحد 30,000 كوين في طلب واحد", "شحن بدون تسجيل دخول", "ضمان بالإيصال", "موجود شحن كل الألعاب"];
 export function Marquee() {
   const all = [...M_ITEMS, ...M_ITEMS, ...M_ITEMS, ...M_ITEMS];
   return (
+    <div className="marquee-wrap">
     <div className="marquee">
       <div className="marquee-track" id="marq">
         {all.map((t, i) => <span key={i}>{t}</span>)}
       </div>
+    </div>
     </div>
   );
 }
@@ -183,80 +183,38 @@ export function Services() {
   );
 }
 
-/* ---------------- PRICES ---------------- */
-function Coin({ label }: { label: string }) {
+/* ---------------- HOW TO ORDER ---------------- */
+const STEPS: [string, string, string][] = [
+  ["🎯", "اختار عرضك", "من العروض أو الأسعار الأساسية، أو خلّي الحاسبة تختارلك أرخص تشكيلة."],
+  ["🛒", "ضيفه للسلة", "تقدر تجمع أكتر من باقة وتطبق كود الخصم لو معاك."],
+  ["👤", "سجّل مرة واحدة", "اسمك ورقم الواتساب بس، وكل طلباتك تتحفظ في حسابك."],
+  ["💬", "ابعت على واتساب", "الطلب بيوصل للأدمن جاهز برقمه، وتدفع فودافون كاش أو إنستاباي."],
+  ["⚡", "الكوينز توصلك", "شحن شرعي من غير دخول على حسابك، وضمان بالإيصال."],
+];
+export function HowTo() {
   return (
-    <div className="coin3d"><div className="e"></div><div className="f">{label}</div><div className="f b">{label}</div></div>
-  );
-}
-
-function ProductCard({ it, i }: { it: Product; i: number }) {
-  const { addToCart } = useStore();
-  const [done, setDone] = useState(false);
-  const t = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(t.current), []);
-  if (it.ask)
-    return (
-      <div className="prod" style={{ animationDelay: `${i * 0.08}s` }} {...tilt(14)}>
-        <Coin label={it.unit || "🎮"} />
-        <div className="amt" style={{ fontSize: 30 }}>{it.name}</div>
-        <div className="sub">السعر حسب الكمية</div>
-        <div className="price"><small>اسأل عن السعر</small></div>
-        <a className="add" style={{ display: "block" }} target="_blank" rel="noopener" href={`https://wa.me/${WA}?text=${encodeURIComponent("عايز أعرف سعر " + it.name)}`}>اسأل على واتساب</a>
-      </div>
-    );
-  return (
-    <div className={`prod${it.hot ? " hot" : ""}`} style={{ animationDelay: `${i * 0.08}s` }} {...tilt(14)}>
-      {it.tag && <span className="tag">{it.tag}</span>}
-      <Coin label="A" />
-      <div className="amt">{fmt(it.c)}<small>كوين</small></div>
-      <div className="sub">{it.s || " "}</div>
-      <div className="price">{fmt(it.p)}<small>جنيه</small></div>
-      <button
-        className={`add${done ? " done" : ""}`}
-        onClick={(e) => {
-          addToCart(it.id, e.clientX, e.clientY);
-          setDone(true);
-          clearTimeout(t.current);
-          t.current = setTimeout(() => setDone(false), 1300);
-        }}
-      >
-        {done ? "✓ اتضاف" : "أضف للسلة +"}
-      </button>
-    </div>
-  );
-}
-
-export function Prices() {
-  const { data, tab, setTab } = useStore();
-  const P = data.platforms.find((p) => p.key === tab) ?? data.platforms[0];
-  return (
-    <section id="prices">
+    <section id="how" style={{ paddingTop: 40 }}>
       <div className="container">
         <Reveal className="sec-head">
-          <span className="kicker">Price List</span>
-          <h2 className="display">أسعار <span className="gold-text">الشحن</span></h2>
-          <p>اختار المنصة، ضيف العرض للسلة، والطلب هيوصلنا على الواتساب على طول.</p>
+          <span className="kicker">How It Works</span>
+          <h2 className="display">طلبك في <span className="gold-text">5 خطوات</span></h2>
+          <p>من غير لف ولا تعقيد، من اختيار العرض لحد ما الكوينز توصل حسابك.</p>
         </Reveal>
-        <Reveal className="tabs" id="tabs">
-          {data.platforms.map((p) => (
-            <button key={p.key} className={`tab${p.key === tab ? " active" : ""}`} onClick={() => setTab(p.key)}>{p.label}</button>
+        <Reveal className="steps">
+          <div className="steps-line"><i></i></div>
+          {STEPS.map(([ic, h, p], i) => (
+            <div className="step" key={h} style={{ "--d": i * 0.18 + "s" } as React.CSSProperties}>
+              <div className="step-ic"><span>{ic}</span><em>{i + 1}</em></div>
+              <h3>{h}</h3>
+              <p>{p}</p>
+            </div>
           ))}
         </Reveal>
-        {P && (
-          <>
-            <div className="panel-note" id="note">
-              {P.notes.map((n) => <span key={n}>⚡ {n}</span>)}
-            </div>
-            <div className="products" id="products" key={P.key}>
-              {P.items.map((it, i) => <ProductCard key={it.id} it={it} i={i} />)}
-            </div>
-          </>
-        )}
       </div>
     </section>
   );
 }
+
 
 /* ---------------- TOURNAMENT ---------------- */
 export function Tournament() {

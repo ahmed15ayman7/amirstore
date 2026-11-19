@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getUser } from "@/lib/auth";
+import { checkPromo } from "@/lib/promo";
+import { promoDiscount } from "@/lib/pricing";
 
 export async function GET() {
   const user = await getUser();
@@ -26,9 +28,12 @@ export async function POST(req: Request) {
   if (!products.length) return Response.json({ error: "السلة فاضية" }, { status: 400 });
   const items = products.map((p) => ({
     productId: p.id, coins: p.coins ?? 0, qty: cart[p.id], price: p.price ?? 0,
-    platform: p.platform.label.replace(/^[^ ]+ /, ""), offer: p.sub ?? null,
+    platform: p.platform.label.replace(/^[^ ]+ /, ""), offer: p.name ? `${p.name} (${p.sub ?? ""})` : p.sub ?? null,
   }));
-  const total = items.reduce((a, i) => a + i.price * i.qty, 0);
+  const subtotal = items.reduce((a, i) => a + i.price * i.qty, 0);
+  const percent = checkPromo(b.promo);
+  const discount = promoDiscount(products.map((p) => ({ price: p.price ?? 0, qty: cart[p.id], kind: p.kind })), percent);
+  const total = subtotal - discount;
   const existing = await prisma.order.findUnique({ where: { id } });
   if (existing) {
     if (existing.userId !== user.id) return Response.json({ error: "duplicate id" }, { status: 409 });
@@ -36,7 +41,7 @@ export async function POST(req: Request) {
   }
   const order = await prisma.order.create({
     data: {
-      id, userId: user.id, total, pay: String(b.pay || "").slice(0, 80), note: String(b.note || "").slice(0, 500) || null,
+      id, userId: user.id, total, discount, promo: discount ? String(b.promo).trim().toUpperCase() : null, pay: String(b.pay || "").slice(0, 80), note: String(b.note || "").slice(0, 500) || null,
       items: { create: items },
     },
   });

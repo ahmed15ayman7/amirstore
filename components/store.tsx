@@ -27,6 +27,9 @@ type Ctx = {
   toast: (t: string) => void;
   toastState: { text: string; on: boolean };
   badgePop: number;
+  addMany: (lines: { id: string; qty: number }[], x: number, y: number) => void;
+  promo: { code: string; percent: number } | null;
+  setPromo: (p: { code: string; percent: number } | null) => void;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -73,6 +76,7 @@ export function StoreProvider({ data, initialUser, children }: { data: StoreData
   const [tab, setTab] = useState(data.platforms[0]?.key ?? "android");
   const [toastState, setToast] = useState({ text: "اتضاف للسلة", on: false });
   const [badgePop, setBadgePop] = useState(0);
+  const [promo, setPromo] = useState<{ code: string; percent: number } | null>(null);
   const pendingCheckout = useRef(false);
   const tt = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -111,9 +115,23 @@ export function StoreProvider({ data, initialUser, children }: { data: StoreData
       setBadgePop((n) => n + 1);
       coinBurst(x, y);
       const it = byId.get(id);
-      if (it) toast(`${fmt(it.c)} كوين اتضافوا للسلة`);
+      if (it) toast(it.kind === "bundle" ? `باقة ${it.name} اتضافت للسلة` : `${fmt(it.c)} كوين اتضافوا للسلة`);
     },
     [byId, toast, updateCart]
+  );
+
+  const addMany = useCallback(
+    (lines: { id: string; qty: number }[], x: number, y: number) => {
+      updateCart((c) => {
+        const n = { ...c };
+        lines.forEach((l) => (n[l.id] = (n[l.id] || 0) + l.qty));
+        return n;
+      });
+      setBadgePop((n) => n + 1);
+      coinBurst(x, y);
+      toast("التشكيلة اتضافت للسلة 🎯");
+    },
+    [toast, updateCart]
   );
 
   const setQty = useCallback(
@@ -147,6 +165,9 @@ export function StoreProvider({ data, initialUser, children }: { data: StoreData
     toast,
     toastState,
     badgePop,
+    addMany,
+    promo,
+    setPromo,
   };
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }

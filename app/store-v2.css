@@ -1,0 +1,131 @@
+/* =========================================================
+   v2 additions: offers vs base prices, calculator, steps,
+   promo code, mobile cart bar
+   ========================================================= */
+
+/* kind switcher (offers / base / bundles) with sliding pill */
+.kinds{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);max-width:640px;margin:0 auto 26px;padding:5px;border-radius:18px;background:#0e0e11;border:1px solid var(--line)}
+.kinds .kpill{position:absolute;top:5px;bottom:5px;right:5px;width:calc((100% - 10px)/var(--n));border-radius:13px;background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));box-shadow:0 8px 24px -8px var(--gold-glow);transform:translateX(calc(var(--i) * -100%));transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.kinds button{position:relative;z-index:1;padding:12px 8px;border:0;background:none;color:#cfcfd6;font-family:inherit;font-weight:900;font-size:14.5px;cursor:pointer;transition:color .3s;display:flex;align-items:center;justify-content:center;gap:6px}
+.kinds button.on{color:#1a1100}
+.kinds button em{font-style:normal;font-size:11px;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.08);padding:0 5px}
+.kinds button.on em{background:rgba(0,0,0,.15)}
+
+/* card extras */
+.prod .save{position:absolute;top:14px;left:14px;background:#1fae5a;color:#fff;font-weight:900;font-size:12px;padding:4px 10px;border-radius:8px;transform:translateZ(40px);box-shadow:0 6px 18px -6px rgba(31,174,90,.7);animation:savePulse 2.2s ease-in-out infinite}
+@keyframes savePulse{50%{box-shadow:0 6px 24px -2px rgba(31,174,90,.9)}}
+.prod .price .was{display:block;font-size:15px;color:#7d7d86;font-weight:800;text-decoration-color:#ff5a5a;text-decoration-thickness:2px;margin-bottom:-2px}
+.prod .p1k{margin:-10px 0 14px;font-size:12px;font-weight:700;color:#7d7d86}
+.prod.bundle .coin3d .f{font-family:inherit;font-size:34px}
+
+.promo-hint{max-width:640px;margin:-6px auto 26px;text-align:center;padding:12px 16px;border-radius:14px;background:rgba(31,174,90,.08);border:1px dashed rgba(31,174,90,.45);color:#9fe8bb;font-weight:700;font-size:14.5px}
+.promo-hint b{color:#fff}
+
+/* countdown */
+.countdown{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:-6px auto 26px;font-weight:800;color:#ffd7a0}
+.cd-cells{display:flex;gap:8px}
+.cd-cell{min-width:58px;padding:8px 6px;border-radius:12px;background:linear-gradient(180deg,#26200f,#120f08);border:1px solid rgba(255,194,26,.35);text-align:center;line-height:1.1}
+.cd-cell b{display:block;font-family:"Lalezar";font-size:24px;color:var(--gold);font-variant-numeric:tabular-nums}
+.cd-cell small{font-size:11px;color:var(--muted)}
+
+/* smart calculator */
+.calc{margin-top:46px;padding:30px;border-radius:28px;position:relative;overflow:hidden;background:radial-gradient(500px 220px at 100% 0%,rgba(255,194,26,.14),transparent 65%),linear-gradient(165deg,#19191e,#0c0c0f);border:1px solid rgba(255,194,26,.28)}
+.calc::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:var(--ice2);filter:blur(140px);opacity:.12;bottom:-140px;left:-60px;pointer-events:none}
+.calc-head{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+.calc-head .kicker{color:var(--gold);font-weight:900;letter-spacing:4px;font-size:12px;display:block}
+.calc-head h3{font-size:clamp(28px,3.4vw,40px);line-height:1.2}
+.calc-head p{color:var(--muted);font-size:15px;max-width:520px}
+.calc-target{text-align:center;padding:12px 22px;border-radius:20px;background:#0b0b0e;border:1px solid var(--line);min-width:170px}
+.calc-target b{display:block;font-family:"Lalezar";font-size:46px;line-height:1.05;color:var(--gold);font-variant-numeric:tabular-nums}
+.calc-target small{color:var(--muted);font-weight:700}
+.calc-range{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:10px;outline:none;cursor:pointer;direction:ltr;
+  background:linear-gradient(90deg,var(--gold2),var(--gold3) var(--p),#25252c var(--p))}
+.calc-range::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;border:4px solid #0c0c0f;background:radial-gradient(circle at 35% 30%,#fff3b8,var(--gold) 50%,var(--gold2));box-shadow:0 0 0 2px var(--gold),0 6px 18px var(--gold-glow);transition:transform .2s}
+.calc-range::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.calc-range::-moz-range-thumb{width:24px;height:24px;border-radius:50%;border:4px solid #0c0c0f;background:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.calc-quick{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 22px}
+.calc-quick button{font-family:inherit;font-weight:800;font-size:13.5px;padding:8px 14px;border-radius:99px;background:#15151a;border:1px solid var(--line);color:#ddd;cursor:pointer;transition:.2s;direction:ltr}
+.calc-quick button:hover{border-color:var(--gold);color:var(--gold)}
+.calc-quick button.on{background:var(--gold);color:#000;border-color:var(--gold)}
+.calc-toggle{margin-right:auto;display:flex;align-items:center;gap:10px;font-weight:800;font-size:14px;color:#cfcfd6;cursor:pointer;user-select:none}
+.calc-toggle input{display:none}
+.calc-toggle span{width:44px;height:24px;border-radius:12px;background:#2a2a31;position:relative;transition:.3s;flex:none}
+.calc-toggle span::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s cubic-bezier(.3,1.4,.5,1)}
+.calc-toggle input:checked+span{background:#1fae5a}
+.calc-toggle input:checked+span::after{transform:translateX(-20px)}
+.calc-res{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:stretch}
+.calc-picks{display:grid;gap:8px;align-content:start}
+.pick{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#111115;border:1px solid var(--line);font-size:14.5px;animation:fadeUp .35s both}
+.pick .mini{width:26px;height:26px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#fff3b8,var(--gold) 45%,var(--gold2))}
+.pick b{font-size:16px}
+.pick em{font-style:normal;color:var(--gold3);font-weight:900}
+.pick i{font-style:normal;font-size:11px;font-weight:900;background:#1fae5a;color:#fff;padding:2px 8px;border-radius:6px}
+.pick.offer{border-color:rgba(31,174,90,.4)}
+.pick .pp{margin-right:auto;font-weight:900;color:var(--gold)}
+.calc-sum{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:18px;background:#0b0b0e;border:1px solid var(--line)}
+.calc-sum>div:not(.calc-saved){display:flex;justify-content:space-between;align-items:baseline}
+.calc-sum small{color:var(--muted);font-weight:700}
+.calc-sum b{font-size:20px;font-weight:900}
+.calc-sum b.gold-text{font-family:"Lalezar";font-size:34px;font-weight:400}
+.calc-saved{text-align:center;padding:9px;border-radius:12px;background:rgba(31,174,90,.12);color:#7fe3a6;font-weight:900;font-size:14px;animation:pop .5s}
+.calc-sum .btn{justify-content:center;margin-top:auto}
+
+/* how-to steps */
+.steps{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.steps-line{position:absolute;top:38px;right:10%;left:10%;height:3px;border-radius:3px;background:#222228;overflow:hidden}
+.steps-line i{position:absolute;inset:0;background:linear-gradient(270deg,var(--gold2),var(--gold3),var(--gold));transform:scaleX(0);transform-origin:right;transition:transform 1.6s cubic-bezier(.6,0,.2,1) .2s}
+.steps.in .steps-line i{transform:scaleX(1)}
+.step{position:relative;text-align:center;padding:0 6px;opacity:0;transform:translateY(24px);transition:.7s cubic-bezier(.2,.8,.2,1) var(--d)}
+.steps.in .step{opacity:1;transform:none}
+.step-ic{width:78px;height:78px;margin:0 auto 16px;border-radius:24px;display:grid;place-items:center;font-size:32px;position:relative;background:linear-gradient(160deg,#22222a,#111115);border:1px solid var(--line);box-shadow:0 0 0 8px var(--bg);transition:.35s}
+.step:hover .step-ic{border-color:var(--gold);transform:translateY(-6px) rotate(-4deg);box-shadow:0 0 0 8px var(--bg),0 16px 34px -12px var(--gold-glow)}
+.step-ic em{position:absolute;top:-8px;left:-8px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;font-style:normal;font-weight:900;font-size:14px;display:grid;place-items:center;box-shadow:0 0 0 4px var(--bg)}
+.step h3{font-size:18px;margin-bottom:4px}
+.step p{color:var(--muted);font-size:14px}
+
+/* promo code in cart */
+.promo{display:flex;gap:8px;margin-bottom:10px}
+.drawer .promo input{margin:0;flex:1;text-transform:uppercase;letter-spacing:1px}
+.promo button{flex:none;padding:0 18px;border-radius:12px;border:1px solid rgba(255,194,26,.45);background:rgba(255,194,26,.1);color:var(--gold3);font-family:inherit;font-weight:900;cursor:pointer}
+.promo.bad input{border-color:#ff5a5a;animation:shake .35s}
+.promo-err{color:#ff7a7a;font-size:13px;font-weight:700;margin:-4px 0 10px}
+.promo.on{align-items:center;padding:10px 12px;border-radius:12px;background:rgba(31,174,90,.1);border:1px solid rgba(31,174,90,.4);color:#9fe8bb;font-size:13.5px;font-weight:700}
+.promo.on b{color:#fff}
+.promo.on a{margin-right:auto;color:#ff8c8c;cursor:pointer;font-weight:800}
+.ok-promo{color:#7fe3a6;font-weight:800}
+.subrows{display:grid;gap:4px;margin:4px 0 2px;font-size:14px;color:#c8c8cf}
+.subrows div{display:flex;justify-content:space-between}
+.subrows .disc{color:#7fe3a6;font-weight:800}
+
+/* sticky mobile cart bar */
+.mcart{display:none}
+@media (max-width:700px){
+  .mcart{display:flex;align-items:center;gap:10px;position:fixed;z-index:94;left:16px;right:16px;bottom:88px;padding:12px 16px;border-radius:18px;border:1px solid rgba(255,194,26,.5);
+    background:rgba(20,18,12,.92);backdrop-filter:blur(12px);color:#fff;font-family:inherit;font-weight:900;font-size:15px;cursor:pointer;
+    box-shadow:0 18px 40px -12px rgba(0,0,0,.9),0 0 30px -12px var(--gold-glow);transform:translateY(160%);transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+  .mcart.on{transform:none}
+  .mcart .mc-n{min-width:28px;height:28px;border-radius:14px;background:var(--gold);color:#000;display:grid;place-items:center;padding:0 6px}
+  .mcart b{margin-right:auto;color:var(--gold)}
+}
+
+@media (max-width:980px){
+  .steps{grid-template-columns:1fr;gap:14px}
+  .steps-line{top:20px;bottom:20px;right:38px;left:auto;width:3px;height:auto}
+  .steps-line i{transform:scaleY(0);transform-origin:top}
+  .steps.in .steps-line i{transform:scaleY(1)}
+  .step{display:grid;grid-template-columns:78px 1fr;gap:4px 16px;text-align:right;align-items:center}
+  .step-ic{grid-row:span 2;margin:0}
+  .step h3{align-self:end}
+  .step p{align-self:start}
+  .calc-res{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .calc{padding:22px 16px}
+  .calc-target{width:100%}
+  .calc-toggle{margin-right:0;width:100%}
+  .kinds button{font-size:12.5px;padding:11px 4px;flex-direction:column;gap:2px}
+  .cd-cell{min-width:50px}
+}
+
+/* the tilted marquee is wider than the viewport: clip it so anchor jumps never shift the page sideways */
+.marquee-wrap{position:relative;z-index:3;overflow:hidden;padding:24px 0;margin:-24px 0}

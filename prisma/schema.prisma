@@ -38,6 +38,7 @@ model Product {
   name        String?  // for "ask" items
   unit        String?
   ask         Boolean  @default(false)
+  kind        String   @default("base") // offer | base | bundle
   sort        Int      @default(0)
   active      Boolean  @default(true)
 }
@@ -63,6 +64,8 @@ model Order {
   userId    String
   user      User        @relation(fields: [userId], references: [id])
   total     Int
+  discount  Int         @default(0)
+  promo     String?
   pay       String
   note      String?
   status    String      @default("اتبعت على واتساب")
@@ -80,4 +83,9 @@ model OrderItem {
   price     Int
   platform  String
   offer     String?
+}
+
+model Setting {
+  key   String @id
+  value String
 }

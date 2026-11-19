@@ -15,8 +15,13 @@ npm run dev             # http://localhost:3000
 
 ## Deploying to Vercel
 1. In the Vercel project: **Storage → Create Database → Neon (Postgres)** and connect it. This adds `DATABASE_URL` automatically.
-2. In **Settings → Environment Variables**, add `AUTH_SECRET` (a long random string).
-3. Redeploy. The `vercel-build` script runs `prisma db push` and seeds the data the first time only (`--if-empty`).
+2. In **Settings → Environment Variables**, add `AUTH_SECRET` (a long random string), and optionally:
+   - `PROMO_CODE` + `PROMO_PERCENT` (e.g. `AMIR10` / `10`): a discount code customers type in the cart. It applies to **base prices and player bundles only**, never to offers. The code itself never reaches the browser.
+   - `OFFER_ENDS_AT` (e.g. `2026-12-01T23:59:00+02:00`): shows a countdown above the offers. Remove it when there is no end date.
+3. Redeploy. The `vercel-build` script runs `prisma db push` and then `seed.ts --sync`.
+
+## Changing prices
+Edit the lists in `prisma/seed.ts`, **bump `CATALOG_VERSION`**, then push. The next deploy rewrites the price list. Accounts and orders are never touched. Product kinds: `offer` (current discounts), `base` (regular prices), `bundle` (player + coins).
 
 ## Structure
 

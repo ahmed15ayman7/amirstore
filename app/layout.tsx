@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./store-v2.css";
 
 export const metadata: Metadata = {
   title: "Amir Store | شحن كوينز eFootball وكل الألعاب",
