@@ -57,28 +57,80 @@ export function tilt(max = 12) {
   };
 }
 
+/* Intro: 3D coin with thickness + rings, letter-by-letter wordmark, real load progress, curtain split exit */
+const MIN_SHOW = 1600; // ms — long enough for the wordmark animation to finish
 export function Loader() {
-  const [hide, setHide] = useState(false);
+  const [pct, setPct] = useState(0);
+  const [phase, setPhase] = useState<"load" | "done" | "out" | "gone">("load");
+
   useEffect(() => {
-    let t1: ReturnType<typeof setTimeout>;
-    const done = () => (t1 = setTimeout(() => setHide(true), 700));
-    if (document.readyState === "complete") done();
-    else addEventListener("load", done, { once: true });
-    const t2 = setTimeout(() => setHide(true), 3500);
+    const t0 = performance.now();
+    let loaded = document.readyState === "complete";
+    let shown = 0,
+      raf = 0;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const onLoad = () => (loaded = true);
+    if (!loaded) addEventListener("load", onLoad, { once: true });
+    document.documentElement.classList.add("ld-lock");
+
+    const tick = () => {
+      const el = performance.now() - t0;
+      // eases toward 90% while loading, then runs to 100% (min show time; 4.5s safety cap)
+      const ready = (loaded && el > MIN_SHOW) || el > 4500;
+      const target = ready ? 100 : 90 * (1 - Math.exp(-el / 900));
+      shown += (target - shown) * (ready ? 0.18 : 0.08);
+      if (ready && shown > 99.5) shown = 100;
+      setPct(Math.round(shown));
+      if (shown < 100) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      timers.push(setTimeout(() => setPhase("done"), 120));
+      timers.push(setTimeout(() => {
+        setPhase("out");
+        document.documentElement.classList.remove("ld-lock");
+      }, 420));
+      timers.push(setTimeout(() => setPhase("gone"), 1500));
+    };
+    raf = requestAnimationFrame(tick);
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      removeEventListener("load", done);
+      cancelAnimationFrame(raf);
+      timers.forEach(clearTimeout);
+      removeEventListener("load", onLoad);
+      document.documentElement.classList.remove("ld-lock");
     };
   }, []);
+
+  const word = "AMIR STORE".split("");
   return (
-    <div id="loader" className={hide ? "hide" : ""}>
-      <div>
-        <div className="loader-coin">
-          <span>A</span>
-          <span>A</span>
+    <div id="loader" className={phase === "load" ? "" : phase === "out" ? "done out" : phase} aria-hidden={phase !== "load"}>
+      <div className="ld-cur t"></div>
+      <div className="ld-cur b"></div>
+      <div className="ld-bg"></div>
+      <div className="ld-in">
+        <div className="ld-stage">
+          <div className="ld-glow"></div>
+          <div className="ld-ring r1"></div>
+          <div className="ld-ring r2"></div>
+          <div className="ld-coin">
+            {Array.from({ length: 11 }, (_, i) => (
+              <i key={i} style={{ transform: `translateZ(${i - 5}px)` }}></i>
+            ))}
+            <div className="face f">A</div>
+            <div className="face k">A</div>
+          </div>
+          <div className="ld-shadow"></div>
         </div>
-        <div className="loader-txt">AMIR STORE</div>
+        <div className="ld-word">
+          {word.map((ch, i) => (
+            <span key={i} className={ch === " " ? "sp" : undefined} style={{ animationDelay: `${0.35 + i * 0.06}s` }}>
+              {ch === " " ? "" : ch}
+            </span>
+          ))}
+        </div>
+        <div className="ld-sub">eFootball™ COINS · SINCE 2021</div>
+        <div className="ld-bar"><b style={{ transform: `scaleX(${pct / 100})` }}></b></div>
+        <div className="ld-pct">{String(pct).padStart(2, "0")}%</div>
       </div>
     </div>
   );
