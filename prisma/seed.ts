@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "../lib/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient({ adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" }) });
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
 type It = { c?: number; p?: number; s?: string; hot?: 1; tag?: string; name?: string; unit?: string; ask?: 1 };
 const SITE_NOTES = ["آيفون وأندرويد", "سيرفر اللعبة لازم يكون نفس سيرفر موقع My Konami", "السن لازم يكون فوق 21 سنة", "الشحن بدون محاولات دخول على الحساب"];
@@ -40,6 +40,11 @@ const FAQ = [
 ];
 
 async function main() {
+  // `--if-empty` (used in the Vercel build) seeds only a fresh DB, so price edits made later are never overwritten
+  if (process.argv.includes("--if-empty") && (await prisma.platform.count()) > 0) {
+    console.log("DB already has data — skipping seed");
+    return;
+  }
   await prisma.product.deleteMany();
   await prisma.platform.deleteMany();
   await prisma.service.deleteMany();
