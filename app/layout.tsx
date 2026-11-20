@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: SITE_NAME, locale: "ar_EG", url: "/", title: SEO_TITLE, description: SEO_DESC, images: [LOGO] },
   twitter: { card: "summary", title: SEO_TITLE, description: SEO_DESC, images: ["/logo.png"] },
   // set GOOGLE_SITE_VERIFICATION in Vercel with the code from Google Search Console
-  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION || "nr3HGna-rQiRiZkbiCInnMtZqufhhN5d2-oSEs-IxFg" },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#09090b" };
