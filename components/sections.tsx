@@ -102,7 +102,7 @@ export function Hero() {
             <span className="line"><span>كوينز eFootball</span></span>
             <span className="line"><span className="gold-text">وشحن لكل الألعاب</span></span>
           </h1>
-          <p className="lead">شحن شرعي ومضمون، ومن غير ما ندخل على حسابك. بنشتغل في المجال من 2021، وعروض الكوينز بتنزل هنا وبس.</p>
+          <p className="lead">شحن كوينز eFootball (بيس) للأندرويد والآيفون: شرعي ومضمون، ومن غير ما ندخل على حسابك. بنشتغل في المجال من 2021، وعروض الكوينز بتنزل هنا وبس.</p>
           <div className="hero-cta">
             <a href="#prices" className="btn btn-gold">تصفح العروض 🟡</a>
             <a href={`https://wa.me/${WA}`} target="_blank" rel="noopener" className="btn btn-ghost">كلمنا واتساب</a>
@@ -221,7 +221,7 @@ export function Tournament() {
     <section id="tournament">
       <Snow />
       <div className="container tour">
-        <Reveal className="tour-img"><img src="/winter-cup.jpg" alt="Amir Store Winter Cup" /></Reveal>
+        <Reveal className="tour-img"><img src="/winter-cup.jpg" alt="بطولة Amir Store الشتوية eFootball" loading="lazy" decoding="async" /></Reveal>
         <Reveal>
           <span className="kicker" style={{ color: "var(--ice)", fontWeight: 900, letterSpacing: 4, fontSize: 13 }}>WINTER CUP 2027</span>
           <h2 className="display">انطلاق بطولة<br /><span className="ice-text">Amir Store الشتوية</span></h2>

@@ -1,9 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: SITE_URL, changeFrequency: "daily", priority: 1 }];
+  return [{ url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1, images: [`${SITE_URL}/logo.png`] }];
 }

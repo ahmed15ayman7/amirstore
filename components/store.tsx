@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Platform, Product, StoreData, User } from "@/lib/types";
 
-export const WA = "201030802437";
+export { WA_NUMBER as WA } from "@/lib/contact";
 export const fmt = (n: number) => n.toLocaleString("en-US");
 
 export type AuthMode = "reg" | "login" | "acc";

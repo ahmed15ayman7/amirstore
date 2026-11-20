@@ -236,7 +236,7 @@ export function Prices() {
         <Reveal className="sec-head">
           <span className="kicker">Price List</span>
           <h2 className="display">أسعار <span className="gold-text">الشحن</span></h2>
-          <p>اختار المنصة، ضيف العرض للسلة، والطلب هيوصلنا على الواتساب على طول.</p>
+          <p>أسعار شحن كوينز eFootball (بيس) للأندرويد والآيفون محدّثة يوميًا. اختار المنصة، ضيف العرض للسلة، والطلب هيوصلنا على الواتساب على طول.</p>
         </Reveal>
         <Reveal className="tabs" id="tabs">
           {data.platforms.map((p) => (
